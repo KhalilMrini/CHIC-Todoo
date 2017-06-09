@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="horizontal" >
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/Blue"
+            android:id="@+id/deviceLayout">
+
+            <TextView
+                android:id="@+id/deviceName"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:text="Device Name"
+                android:textSize="20dp"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:paddingLeft="40dp"
+                android:paddingTop="15dp"
+                android:paddingRight="15dp"
+                android:textColor="@color/DarkBlue"
+                android:textStyle="bold"
+                android:autoText="true"
+                android:gravity="center_vertical"
+                android:layout_weight="0.8" />
+
+            <TextView
+                android:id="@+id/deviceAddress"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:text="Device Address"
+                android:textSize="18dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:paddingLeft="40dp"
+                android:paddingRight="15dp"
+                android:paddingBottom="15dp"
+                android:textColor="@color/DarkBlue"
+                android:autoText="true"
+                android:gravity="center_vertical"
+                android:layout_weight="0.8" />
+
+        </LinearLayout>
+    </FrameLayout>
+
+</LinearLayout>

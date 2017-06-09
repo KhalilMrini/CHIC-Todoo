@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="#50bed8"
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+    app:layout_scrollFlags="scroll|enterAlways"
+    app:contentInsetLeft="0dp"
+    app:contentInsetStart="0dp"
+    app:layout_collapseMode="pin">
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/frame"
+        android:background="#50bed8"
+        android:layout_gravity="center"
+        android:foregroundGravity="center">
+
+        <!-- This is a centered logo -->
+        <ImageView
+            android:id="@+id/toolbar_logo"
+            android:src="@mipmap/todoo"
+            android:layout_width="215dp"
+            android:layout_height="215dp"
+            android:layout_gravity="center" />
+
+        <!-- This is a custom left side button -->
+        <ImageButton
+            android:id="@+id/back_button"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:src="@drawable/ic_chevron_left_48px"
+            style="@style/Widget.AppCompat.ActionButton"
+            android:layout_marginRight="?attr/actionBarSize"
+            android:contentDescription="Back Button" />
+
+    </FrameLayout>
+</android.support.v7.widget.Toolbar>
