@@ -2,8 +2,8 @@
     <string name="app_name">Todoo</string>
 
     <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
+    <string name="prompt_email">E-MAIL</string>
+    <string name="prompt_password">PASSWORD</string>
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="error_invalid_email">This email address is invalid</string>
@@ -54,6 +54,7 @@
 
     <string-array name="menu_items">
         <item>"MY DAY PLANS"</item>
+        <item>"MY GALLERY"</item>
         <item>"MY CHILDREN"</item>
         <item>"MY SETTINGS"</item>
     </string-array>
@@ -67,6 +68,9 @@
         <item>"SATURDAY"</item>
         <item>"SUNDAY"</item>
     </string-array>
+
+    <string name="spinner_header_empty_list">SELECT DAY PLAN</string>
+    <string name="spinner_header_non_empty_list">CUSTOMISED DAY PLAN</string>
 
     <!-- Example settings for Data & Sync -->
     <string name="pref_header_data_sync">Data &amp; sync</string>

@@ -8,13 +8,13 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#ffffff">
+        android:background="@color/White">
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#50bed8">
+            android:background="@color/Blue2">
 
             <TextView
                 android:id="@+id/itemName"
@@ -27,20 +27,21 @@
                 android:paddingTop="15dp"
                 android:paddingRight="15dp"
                 android:paddingBottom="15dp"
-                android:textColor="#2274a5"
+                android:textColor="@color/Blue1"
                 android:textStyle="bold"
                 android:autoText="true"
                 android:gravity="center_vertical"
-                android:layout_weight="0.8" />
+                android:layout_weight="0.9" />
 
             <ImageView
                 android:layout_width="50dp"
                 android:layout_height="match_parent"
-                android:layout_gravity="right"
-                android:src="@drawable/ic_keyboard_arrow_right_black_24px"
+                android:layout_gravity="center|right"
+                android:src="@drawable/fleche_content"
                 android:id="@+id/itemImage"
-                android:layout_weight="0.2"
-                android:minWidth="50dp" />
+                android:layout_weight="0.1"
+                android:minWidth="50dp"
+                android:layout_marginTop="5dp" />
         </LinearLayout>
     </FrameLayout>
 

@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="#e3f3fa"
+    android:background="@color/Blue5"
     tools:context="chic.khalil.chic.CreateAccountActivity">
 
     <!-- Login progress -->
@@ -54,8 +54,8 @@
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:textColor="#2274a5"
-                    android:textColorHint="#2274a5" />
+                    android:textColor="@color/Blue1"
+                    android:textColorHint="@color/Blue1" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -67,15 +67,15 @@
                     android:id="@+id/password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Password"
+                    android:hint="@string/prompt_password"
                     android:imeActionId="@+id/login"
                     android:imeActionLabel="@string/action_sign_in_short"
                     android:imeOptions="actionUnspecified"
                     android:inputType="textPassword"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:textColorHint="#2274a5"
-                    android:textColor="#2274a5" />
+                    android:textColorHint="@color/Blue1"
+                    android:textColor="@color/Blue1" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -87,29 +87,31 @@
                     android:id="@+id/name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Child's Full Name"
+                    android:hint="CHILD'S FULL NAME"
                     android:imeActionId="@+id/login"
                     android:imeActionLabel="@string/action_sign_in_short"
                     android:imeOptions="actionUnspecified"
                     android:inputType="textPersonName"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:textColor="#2274a5"
-                    android:textColorHint="#2274a5" />
+                    android:textColor="@color/Blue1"
+                    android:textColorHint="@color/Blue1" />
 
             </android.support.design.widget.TextInputLayout>
 
 
             <Button
                 android:id="@+id/email_sign_in_button"
-                style="?android:textAppearanceSmall"
+                style="?android:textAppearanceMedium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/button_top_margin"
                 android:text="SIGN UP"
                 android:textStyle="bold"
-                android:textColor="#ffffff"
-                android:background="@drawable/red_shape" />
+                android:textColor="@color/White"
+                android:background="@drawable/red_shape"
+                android:layout_marginLeft="@dimen/button_margin"
+                android:layout_marginRight="@dimen/button_margin" />
 
         </LinearLayout>
     </ScrollView>

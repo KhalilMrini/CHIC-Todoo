@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <!-- drawable/circle_card_icon.xml -->
+        <shape xmlns:android="http://schemas.android.com/apk/res/android"
+            android:shape="rectangle">
+            <solid android:color="@color/Blue2" />
+
+            <corners
+                android:bottomRightRadius="14dp"
+                android:bottomLeftRadius="14dp"
+                android:topLeftRadius="14dp"
+                android:topRightRadius="14dp"/>
+
+        </shape>
+    </item>
+    <item
+        android:drawable="@drawable/fleche_menu_down"
+        android:gravity="right"
+        android:top="20dp"
+        android:width="40dp"
+        android:height="27dp"/>
+</layer-list>

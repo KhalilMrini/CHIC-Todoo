@@ -5,10 +5,11 @@
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:background="#50bed8"
+    android:background="@color/Blue2"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
     app:layout_scrollFlags="scroll|enterAlways"
     app:contentInsetLeft="0dp"
+    android:elevation="4dp"
     app:contentInsetStart="0dp"
     app:layout_collapseMode="pin">
 
@@ -16,7 +17,7 @@
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:id="@+id/frame"
-        android:background="#50bed8"
+        android:background="@color/Blue2"
         android:layout_gravity="center"
         android:foregroundGravity="center">
 
@@ -24,8 +25,8 @@
         <ImageView
             android:id="@+id/toolbar_logo"
             android:src="@mipmap/todoo"
-            android:layout_width="215dp"
-            android:layout_height="215dp"
+            android:layout_width="126dp"
+            android:layout_height="126dp"
             android:layout_gravity="center" />
 
         <!-- This is a custom left side button -->
@@ -34,7 +35,7 @@
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:src="@drawable/ic_chevron_left_48px"
+            android:src="@drawable/fleche_menu_left"
             style="@style/Widget.AppCompat.ActionButton"
             android:layout_marginRight="?attr/actionBarSize"
             android:contentDescription="Back Button" />
@@ -47,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end"
-            android:src="@drawable/ic_menu_black_48px"
+            android:src="@drawable/menu"
             style="@style/Widget.AppCompat.ActionButton" />
 
     </FrameLayout>

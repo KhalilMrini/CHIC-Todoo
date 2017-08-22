@@ -15,26 +15,15 @@ import android.widget.TextView;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class AddItemActivity extends AppCompatActivity {
+public class AddItemActivity extends IntentActivity {
 
-    String email;
-    String child;
     String page;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        layout = R.layout.activity_add_item;
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_item);
-
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                        .setDefaultFontPath(getResources().getString(R.string.font))
-                        .setFontAttrId(R.attr.fontPath)
-                        .build()
-        );
-
-        email = getIntent().getStringExtra("email");
-        child = getIntent().getStringExtra("child");
-        page = getIntent().getStringExtra("page");
+        page = intent.getStringExtra("page");
 
         ImageButton backButton = (ImageButton) findViewById(R.id.back_button);
         backButton.setOnClickListener(new View.OnClickListener() {

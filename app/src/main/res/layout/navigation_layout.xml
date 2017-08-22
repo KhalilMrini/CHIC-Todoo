@@ -11,12 +11,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:weightSum="1"
-        android:background="#50bed8">
+        android:background="@color/Blue2">
 
         <ListView
             android:id="@+id/menuItemList"
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
+            android:divider="@color/Blue5"
+            android:dividerHeight="0.5dp"
             android:layout_weight="0.96" />
 
         <TextView
@@ -30,12 +32,12 @@
             android:paddingTop="15dp"
             android:paddingRight="15dp"
             android:paddingBottom="15dp"
-            android:textColor="#ffffff"
+            android:textColor="@color/White"
             android:textStyle="bold"
             android:autoText="true"
             android:gravity="center_vertical"
             android:textAlignment="center"
-            android:background="#e6494e" />
+            android:background="@color/Red" />
 
     </LinearLayout>
     

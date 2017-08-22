@@ -47,7 +47,7 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice> {
                 public void onClick(View v) {
                     if (callback != null){
                         callback.wasClicked(deviceName, deviceAddress, position);
-                        deviceLayout.setBackgroundColor(v.getResources().getColor(R.color.DarkBlue));
+                        deviceLayout.setBackgroundColor(v.getResources().getColor(R.color.Blue1));
                         deviceNameView.setTextColor(v.getResources().getColor(R.color.White));
                         deviceAddressView.setTextColor(v.getResources().getColor(R.color.White));
                     }

@@ -1,22 +1,40 @@
 package chic.khalil.chic;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.DataSetObserver;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
-public class ActivitiesActivity extends DrawerActivity implements ItemCursorAdapter.ItemCursorAdapterInterface {
+import java.util.ArrayList;
+
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+
+public class ActivitiesActivity extends IntentActivity implements ItemCursorAdapter.ItemCursorAdapterInterface {
 
     String page;
     String plan;
     boolean isWeekDayPlan;
+
+    Typeface type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +42,10 @@ public class ActivitiesActivity extends DrawerActivity implements ItemCursorAdap
         isWeekDayPlan = plan != null && plan.startsWith(getResources().getString(R.string.init_day));
         layout = (isWeekDayPlan && getIntent().getStringExtra("page").equals(getResources().getString(R.string.page_act))) ?
                 R.layout.activity_day_tasks : R.layout.activity_activities;
+
         super.onCreate(savedInstanceState);
+
+        type = Typeface.createFromAsset(getAssets(), "fonts/Quicksand-Bold.ttf");
         page = intent.getStringExtra("page");
 
         ImageButton backButton = (ImageButton) findViewById(R.id.back_button);
@@ -37,13 +58,16 @@ public class ActivitiesActivity extends DrawerActivity implements ItemCursorAdap
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
-        ListView modularListView = (ListView) findViewById(R.id.modularListView);
+        final ListView modularListView = (ListView) findViewById(R.id.modularListView);
 
         Cursor cursor = null;
         String columnName = "";
 
         if (isActivities()){
             plan = intent.getStringExtra("plan");
+            TextView title = (TextView) findViewById(R.id.custom_title);
+            title.setText(plan.replace(getResources().getString(R.string.init_day),""));
+            title.setTypeface(type);
             TaskDatabaseHelper taskDb = new TaskDatabaseHelper(this);
             cursor = taskDb.query(email, child, plan);
             TaskCursorAdapter adapter = new TaskCursorAdapter(this, cursor);
@@ -77,14 +101,45 @@ public class ActivitiesActivity extends DrawerActivity implements ItemCursorAdap
                         start(i);
                     }
                 });
-                Button chosePlan = (Button) findViewById(R.id.chosePlan);
-                chosePlan.setOnClickListener(new View.OnClickListener() {
+                Spinner spinner = (Spinner) findViewById(R.id.spinner);
+                PlanDatabaseHelper planDb = new PlanDatabaseHelper(this);
+                Cursor planCursor = planDb.query(email, child);
+
+                ArrayList<String> mArrayList = new ArrayList<>();
+                mArrayList.add(cursor.getCount() > 0 ? getResources().getString(R.string.spinner_header_non_empty_list) : getResources().getString(R.string.spinner_header_empty_list));
+                for(planCursor.moveToFirst(); !planCursor.isAfterLast(); planCursor.moveToNext()) {
+                    mArrayList.add(planCursor.getString(planCursor.getColumnIndex(planDb.COL_3)));
+                }
+                planDb.close();
+                SpinnerArrayAdapter spinnerAdapter = new SpinnerArrayAdapter(this, R.layout.simple_spinner_item, mArrayList);
+                spinnerAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+                spinner.setAdapter(spinnerAdapter);
+                spinner.setDropDownHorizontalOffset(0);
+                spinner.setDropDownVerticalOffset(40);
+                spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
-                    public void onClick(View v) {
-                        Intent i = new Intent(ActivitiesActivity.this, ActivitiesActivity.class);
-                        page = getResources().getString(R.string.page_plan);
-                        i.putExtra("plan", plan);
-                        start(i);
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        String text = ((TextView) view).getText().toString();
+                        if (!text.equals(getResources().getString(R.string.spinner_header_non_empty_list)) && !text.equals(getResources().getString(R.string.spinner_header_empty_list))) {
+                            TaskDatabaseHelper taskDb = new TaskDatabaseHelper(ActivitiesActivity.this);
+                            taskDb.delete(email, child, plan);
+                            Cursor cursor = taskDb.query(email, child, text);
+                            while (cursor.moveToNext()) {
+                                taskDb.insertData(email, child, plan,
+                                        cursor.getString(cursor.getColumnIndexOrThrow(taskDb.COL_5)),
+                                        cursor.getString(cursor.getColumnIndexOrThrow(taskDb.COL_6)),
+                                        cursor.getString(cursor.getColumnIndexOrThrow(taskDb.COL_7)),
+                                        cursor.getString(cursor.getColumnIndexOrThrow(taskDb.COL_8)));
+                            }
+                            cursor = taskDb.query(email, child, plan);
+                            TaskCursorAdapter adapter = new TaskCursorAdapter(ActivitiesActivity.this, cursor);
+                            modularListView.setAdapter(adapter);
+                        }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
                     }
                 });
             }
@@ -92,6 +147,7 @@ public class ActivitiesActivity extends DrawerActivity implements ItemCursorAdap
             PlanDatabaseHelper planDb = new PlanDatabaseHelper(this);
             cursor = planDb.query(email, child);
             columnName = planDb.COL_3;
+            planDb.close();
         } else if (isMyChildren()){
             ChildrenDatabaseHelper childDb = new ChildrenDatabaseHelper(this);
             cursor = childDb.query(email);
@@ -112,6 +168,24 @@ public class ActivitiesActivity extends DrawerActivity implements ItemCursorAdap
                     start(i);
                 }
             });
+        }
+        overrideFonts(this, findViewById(R.id.largerLayout));
+    }
+
+    private void overrideFonts(final Context context, final View v) {
+        try {
+            if (v instanceof ViewGroup) {
+                ViewGroup vg = (ViewGroup) v;
+                System.out.println("We have " + vg.getChildCount() + " children views here.");
+                for (int i = 0; i < vg.getChildCount(); i++) {
+                    View child = vg.getChildAt(i);
+                    overrideFonts(context, child);
+                }
+            } else if (v instanceof TextView ) {
+                System.out.println("One change! for " + ((TextView) v).getText().toString());
+                ((TextView) v).setTypeface(type);
+            }
+        } catch (Exception e) {
         }
     }
 
@@ -138,18 +212,6 @@ public class ActivitiesActivity extends DrawerActivity implements ItemCursorAdap
         Intent i = new Intent(ActivitiesActivity.this, isMyChildren() ? MenuActivity.class : ActivitiesActivity.class);
         if (isMyDayPlans()) {
             i.putExtra("plan", isWeekDayPlan ? plan : text);
-            if (isWeekDayPlan){
-                TaskDatabaseHelper taskDb = new TaskDatabaseHelper(this);
-                taskDb.delete(email, child, plan);
-                Cursor cursor = taskDb.query(email, child, text);
-                while (cursor.moveToNext()){
-                    taskDb.insertData(email, child, plan,
-                            cursor.getString(cursor.getColumnIndexOrThrow(taskDb.COL_5)),
-                            cursor.getString(cursor.getColumnIndexOrThrow(taskDb.COL_6)),
-                            cursor.getString(cursor.getColumnIndexOrThrow(taskDb.COL_7)),
-                            cursor.getString(cursor.getColumnIndexOrThrow(taskDb.COL_8)));
-                }
-            }
             page = getResources().getString(R.string.page_act);
         } else {
             child = text;

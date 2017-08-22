@@ -48,8 +48,10 @@ import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -65,7 +67,7 @@ import org.apache.commons.lang3.ArrayUtils;
 /**
  * Created by Khalil on 12/05/17.
  */
-public class SettingsActivity extends DrawerActivity implements DeviceListAdapter.DeviceArrayAdapterInterface {
+public class SettingsActivity extends IntentActivity implements DeviceListAdapter.DeviceArrayAdapterInterface {
 
     private static final String TAG = "SettingsActivity";
 
@@ -76,7 +78,7 @@ public class SettingsActivity extends DrawerActivity implements DeviceListAdapte
     Button syncToWatch;
     Button discoverDevices;
 
-    private Handler mHandler;
+    Handler mHandler = new Handler();
 
     public ArrayList<BluetoothDevice> mBTDevices = new ArrayList<>();
 
@@ -93,20 +95,37 @@ public class SettingsActivity extends DrawerActivity implements DeviceListAdapte
     private BluetoothGattCharacteristic chosenCharacteristic = null;
     private BluetoothGattService chosenService = null;
 
-    int writeIndex;
+    int sendIndex = 0;
+    boolean isSending = false;
+    byte[] msg;
+
+    Runnable task = new Runnable() {
+        @Override
+        public void run() {
+            if (sendIndex >= msg.length) {
+                // Finished sending
+                Log.d(TAG, "Sending accomplished.");
+                isSending = false;
+                sendIndex = 0;
+            } else if (!(chosenCharacteristic.setValue(new byte[]{msg[sendIndex]}))) {
+                Log.e(TAG, "Could not set the value locally for " + sendIndex);
+                send(10);
+            } else {
+                if (!mBluetoothLeService.write(chosenCharacteristic)) {
+                    Log.e(TAG, "Could set the value locally but not on BLE for " + sendIndex);
+                    send(10);
+                } else {
+                    Toast.makeText(SettingsActivity.this, "Sync Completed!", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "Sent the following byte: " + chosenCharacteristic.getStringValue(0));
+                }
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         layout = R.layout.activity_settings;
         super.onCreate(savedInstanceState);
-
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                        .setDefaultFontPath(getResources().getString(R.string.font))
-                        .setFontAttrId(R.attr.fontPath)
-                        .build()
-        );
-
-        mHandler = new Handler();
 
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
@@ -198,8 +217,6 @@ public class SettingsActivity extends DrawerActivity implements DeviceListAdapte
 
         lvNewDevices = (ListView) findViewById(R.id.deviceList);
 
-        writeIndex = 0;
-
         syncToWatch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -285,18 +302,17 @@ public class SettingsActivity extends DrawerActivity implements DeviceListAdapte
                         }
                     }
                 }*/
-                String msg = "CHIC";
-                if (chosenCharacteristic.setValue(msg.substring(writeIndex, writeIndex+1)) && mBluetoothLeService.write(chosenCharacteristic)) {
-                    Toast.makeText(SettingsActivity.this, "Sync Completed!", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, chosenCharacteristic.getStringValue(0));
-                    writeIndex++;
-                    if (writeIndex == 4){
-                        writeIndex = 0;
-                    }
-                } else {
-                    Toast.makeText(SettingsActivity.this, "Sync Failed!", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "Sync Failed.");
-                }
+                Cursor cursor = taskDb.query(email, child, getResources().getString(R.string.init_day) + "MONDAY");
+                cursor.moveToFirst();
+                String filePath = cursor.getString(cursor.getColumnIndex(taskDb.COL_8));
+                Bitmap image = BitmapFactory.decodeFile(filePath).copy(Bitmap.Config.RGB_565, false);
+                int bytes = image.getByteCount();
+                ByteBuffer buffer = ByteBuffer.allocate(bytes); //Create a new buffer
+                image.copyPixelsToBuffer(buffer);
+                msg = buffer.array();
+
+                isSending = true;
+                send(0);
             }
         });
 
@@ -458,6 +474,7 @@ public class SettingsActivity extends DrawerActivity implements DeviceListAdapte
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             mBluetoothLeService = null;
+            Log.e(TAG, "Service Disconnected");
         }
     };
 
@@ -483,16 +500,14 @@ public class SettingsActivity extends DrawerActivity implements DeviceListAdapte
                 List<BluetoothGattService> services = mBluetoothLeService.getSupportedGattServices();
                 int index = 0;
                 while (index < services.size() && !services.get(index).getUuid().equals(SERVICE_UUID)) {
-                    Log.d(TAG, "Found Service with UUID " + services.get(index).getUuid());
                     index++;
                 }
                 if (index < services.size()){
                     Log.d(TAG, "Found the Right Service");
                     chosenService = services.get(index);
-                    int cIndex = 0;
                     List<BluetoothGattCharacteristic> characteristics = chosenService.getCharacteristics();
+                    int cIndex = 0;
                     while (cIndex < characteristics.size() && !characteristics.get(cIndex).getUuid().equals(CHARACTERISTIC_UUID)){
-                        Log.d(TAG, "Found Characteristic with UUID " + characteristics.get(cIndex).getUuid());
                         cIndex ++;
                     }
                     if (cIndex < characteristics.size()){
@@ -501,10 +516,17 @@ public class SettingsActivity extends DrawerActivity implements DeviceListAdapte
                         syncToWatch.setEnabled(true);
                         Toast.makeText(SettingsActivity.this, "You are now connected to the watch "+ mDeviceName,
                                 Toast.LENGTH_LONG).show();
+                        if (isSending){
+                            send(0);
+                        }
+                    } else {
+                        Log.e(TAG, "Could not find the Right Characteristic");
                     }
+                } else {
+                    Log.e(TAG, "Could not find the Right Service");
                 }
-            } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-                // Won't receive information
+            } else if (BluetoothLeService.CHARACTERISTIC_WRITTEN.equals(action)) {
+                sendNext(0);
             }
         }
     };
@@ -531,6 +553,16 @@ public class SettingsActivity extends DrawerActivity implements DeviceListAdapte
         intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED);
         intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
         intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
+        intentFilter.addAction(BluetoothLeService.CHARACTERISTIC_WRITTEN);
         return intentFilter;
+    }
+
+    private void send(int delay){
+        mHandler.postDelayed(task, delay);
+    }
+
+    private void sendNext(int delay){
+        sendIndex++;
+        send(delay);
     }
 }

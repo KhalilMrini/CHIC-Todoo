@@ -8,7 +8,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".AddItemActivity"
-    android:background="@color/LightBlue">
+    android:background="@color/Blue3">
 
     <TextView
         android:layout_width="wrap_content"
@@ -19,7 +19,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="82dp"
-        android:textColor="@color/DarkBlue"
+        android:textColor="@color/Blue1"
         android:textStyle="bold" />
 
     <EditText
@@ -29,7 +29,7 @@
         android:layout_marginTop="40dp"
         android:layout_below="@+id/textViewPlan"
         android:layout_centerHorizontal="true"
-        android:textColor="@color/DarkBlue"
+        android:textColor="@color/Blue1"
         android:hint="Day Plan Name" />
 
     <Button

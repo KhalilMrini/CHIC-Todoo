@@ -14,7 +14,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/Blue"
+            android:background="@color/Blue2"
             android:id="@+id/deviceLayout">
 
             <TextView
@@ -27,7 +27,7 @@
                 android:paddingLeft="40dp"
                 android:paddingTop="15dp"
                 android:paddingRight="15dp"
-                android:textColor="@color/DarkBlue"
+                android:textColor="@color/Blue1"
                 android:textStyle="bold"
                 android:autoText="true"
                 android:gravity="center_vertical"
@@ -43,7 +43,7 @@
                 android:paddingLeft="40dp"
                 android:paddingRight="15dp"
                 android:paddingBottom="15dp"
-                android:textColor="@color/DarkBlue"
+                android:textColor="@color/Blue1"
                 android:autoText="true"
                 android:gravity="center_vertical"
                 android:layout_weight="0.8" />

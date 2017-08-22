@@ -26,29 +26,14 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 /**
  * Created by Khalil on 11/05/17.
  */
-public abstract class DrawerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ItemArrayAdapter.ItemArrayAdapterInterface {
+public abstract class DrawerActivity extends IntentActivity implements NavigationView.OnNavigationItemSelectedListener, ItemArrayAdapter.ItemArrayAdapterInterface {
 
-    String email;
-    String child;
-    int layout;
-    Intent intent;
 
     final static int IMAGE_SIZE = 128;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(layout);
-
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                        .setDefaultFontPath(getResources().getString(R.string.font))
-                        .setFontAttrId(R.attr.fontPath)
-                        .build()
-        );
-
-        intent = getIntent();
-        email = intent.getStringExtra("email");
-        child = intent.getStringExtra("child");
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -105,13 +90,13 @@ public abstract class DrawerActivity extends AppCompatActivity implements Naviga
                 i.putExtra("child", child);
                 i.putExtra("page", getResources().getString(R.string.page_plan));
                 startActivity(i);
-            } else if (position == 1) {
+            } else if (position == 2) {
                 Intent i = new Intent(this, ActivitiesActivity.class);
                 i.putExtra("email", email);
                 i.putExtra("child", child);
                 i.putExtra("page", getResources().getString(R.string.page_child));
                 startActivity(i);
-            } else if (position == 2) {
+            } else if (position == 3) {
                 Intent i = new Intent(this, SettingsActivity.class);
                 i.putExtra("email", email);
                 i.putExtra("child", child);

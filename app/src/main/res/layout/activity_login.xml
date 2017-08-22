@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="chic.khalil.chic.LoginActivity"
-    android:background="#e3f3fa">
+    android:background="@color/Blue5">
 
     <!-- Login progress -->
 
@@ -55,8 +55,8 @@
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:textColor="#2274a5"
-                    android:textColorHint="#2274a5" />
+                    android:textColor="@color/Blue1"
+                    android:textColorHint="@color/Blue1" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -75,32 +75,36 @@
                     android:inputType="textPassword"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:textColor="#2274a5"
-                    android:textColorHint="#2274a5" />
+                    android:textColor="@color/Blue1"
+                    android:textColorHint="@color/Blue1" />
 
             </android.support.design.widget.TextInputLayout>
 
             <Button
                 android:id="@+id/email_sign_in_button"
-                style="?android:textAppearanceSmall"
+                style="?android:textAppearanceMedium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="70dp"
                 android:text="Sign in"
                 android:textStyle="bold"
                 android:background="@drawable/dark_blue_shape"
-                android:textColor="#ffffff" />
+                android:textColor="#ffffff"
+                android:layout_marginLeft="@dimen/button_margin"
+                android:layout_marginRight="@dimen/button_margin" />
 
             <Button
                 android:id="@+id/email_sign_up_button"
-                style="?android:textAppearanceSmall"
+                style="?android:textAppearanceMedium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Create an Account"
+                android:text="New Account"
                 android:textStyle="bold"
                 android:background="@drawable/red_shape"
-                android:textColor="#ffffff" />
+                android:textColor="#ffffff"
+                android:layout_marginLeft="@dimen/button_margin"
+                android:layout_marginRight="@dimen/button_margin" />
 
         </LinearLayout>
     </ScrollView>

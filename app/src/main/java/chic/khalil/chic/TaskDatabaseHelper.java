@@ -58,16 +58,12 @@ public class TaskDatabaseHelper extends SQLiteOpenHelper {
         imageValues.put(COL_8, image);
         db.insert(IMAGE_NAME, null, imageValues);
         long result = db.insert(TABLE_NAME, null, contentValues);
-        if (result == -1){
-            return false;
-        } else {
-            return true;
-        }
+        return result != -1;
     }
 
     public Cursor query(String email, String child, String plan){
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("select * from " + TABLE_NAME + " where " + COL_2 + " = \"" + email + "\" and " + COL_3 + " = \"" + child + "\" and " + COL_4 + " = \"" + plan + "\"", null);
+        Cursor res = db.rawQuery("select * from " + TABLE_NAME + " where " + COL_2 + " = \"" + email + "\" and " + COL_3 + " = \"" + child + "\" and " + COL_4 + " = \"" + plan + "\" order by \"" + COL_6 + "\" ASC", null);
         return res;
     }
 

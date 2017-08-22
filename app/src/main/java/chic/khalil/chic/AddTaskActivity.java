@@ -1,10 +1,17 @@
 package chic.khalil.chic;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -14,7 +21,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
@@ -139,14 +150,24 @@ public class AddTaskActivity extends AppCompatActivity {
         String endTime = editEndTime.getText().toString();
         boolean start = isHoursAndMinutes(startTime);
         boolean end = isHoursAndMinutes(endTime);
+        if (name.length() == 0){
+            editName.setError("No name!");
+        }
         if (!start){
             editStartTime.setError("Respect the time format!");
         }
         if (!end){
             editEndTime.setError("Respect the time format!");
         }
-        if (start && end){
-            boolean inserted = myDb.insertData(email, child, plan, name, startTime, endTime, filePath);
+        if (start && end && name.length() > 0){
+            boolean inserted;
+            if (filePath.length() > 0){
+                Bitmap selectedImage = getRoundedCornerBitmap(Bitmap.createScaledBitmap(BitmapFactory.decodeFile(filePath), 80, 80, false),7);
+                String newFilePath = saveToInternalStorage(selectedImage, name);
+                inserted = myDb.insertData(email, child, plan, name, startTime, endTime, newFilePath);
+            } else {
+                inserted = myDb.insertData(email, child, plan, name, startTime, endTime, filePath);
+            }
             if (inserted){
                 moveBack();
             }
@@ -169,11 +190,59 @@ public class AddTaskActivity extends AppCompatActivity {
                     cursor.close();
                     Bitmap selectedImage = BitmapFactory.decodeFile(filePath);
                     imageView.setImageBitmap(selectedImage);
+                    TextView imageTextView = (TextView) findViewById(R.id.myImageViewText);
+                    imageTextView.setText("");
                 }
                 break;
             default:
                 break;
         }
+    }
+
+    private static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int pixels) {
+        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap
+                .getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        final int color = 0xff424242;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final RectF rectF = new RectF(rect);
+        final float roundPx = pixels;
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        return output;
+    }
+
+    private String saveToInternalStorage(Bitmap bitmapImage, String name){
+        ContextWrapper cw = new ContextWrapper(getApplicationContext());
+        // path to /data/data/yourapp/app_data/imageDir
+        File directory = cw.getDir("pictures", Context.MODE_PRIVATE);
+        // Create imageDir
+        File mypath = new File(directory,email + "_" + child + "_" + plan + "_" + name + ".jpg");
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(mypath);
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return mypath.getAbsolutePath();
     }
 
     public void moveBack(){

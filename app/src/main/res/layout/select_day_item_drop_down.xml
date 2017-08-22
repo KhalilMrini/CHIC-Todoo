@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="200dp"
+    android:layout_height="?attr/actionBarSize"
+    android:descendantFocusability="blocksDescendants"
+    android:id="@+id/dayLayout"
+    android:paddingBottom="5dp">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:focusableInTouchMode="false"
+        android:descendantFocusability="blocksDescendants"
+        android:background="@drawable/custom_shape">
+
+        <TextView
+            android:id="@+id/itemName"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:focusableInTouchMode="false"
+            android:text="MY ITEM"
+            android:textSize="20dp"
+            android:textColor="@color/Blue1"
+            android:textStyle="bold"
+            android:autoText="true"
+            android:textAllCaps="true"
+            android:gravity="center_vertical"
+            android:layout_weight="0.31"
+            android:padding="10dp"
+            android:textAlignment="center"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
+
+</RelativeLayout>
