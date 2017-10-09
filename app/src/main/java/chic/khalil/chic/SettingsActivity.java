@@ -78,6 +78,8 @@ public class SettingsActivity extends IntentActivity implements DeviceListAdapte
     Button syncToWatch;
     Button discoverDevices;
 
+    int numberOfBytes = 1;
+
     Handler mHandler = new Handler();
 
     public ArrayList<BluetoothDevice> mBTDevices = new ArrayList<>();
@@ -107,7 +109,7 @@ public class SettingsActivity extends IntentActivity implements DeviceListAdapte
                 Log.d(TAG, "Sending accomplished.");
                 isSending = false;
                 sendIndex = 0;
-            } else if (!(chosenCharacteristic.setValue(new byte[]{msg[sendIndex]}))) {
+            } else if (!(chosenCharacteristic.setValue(combine(msg, sendIndex, numberOfBytes)))) {
                 Log.e(TAG, "Could not set the value locally for " + sendIndex);
                 send(10);
             } else {
@@ -329,6 +331,15 @@ public class SettingsActivity extends IntentActivity implements DeviceListAdapte
         byte[] result = {};
         for (byte[] b: values){
             result = (byte[]) ArrayUtils.addAll(result, b);
+        }
+        return result;
+    }
+
+    public byte[] combine(byte[] values, int sendIndex, int number){
+        byte[] result = {};
+        for (int  i = 0; i < number; i++){
+            if (sendIndex + i < values.length)
+                result = ArrayUtils.addAll(result, new byte[]{values[sendIndex+i]});
         }
         return result;
     }
@@ -562,7 +573,7 @@ public class SettingsActivity extends IntentActivity implements DeviceListAdapte
     }
 
     private void sendNext(int delay){
-        sendIndex++;
+        sendIndex += numberOfBytes;
         send(delay);
     }
 }
