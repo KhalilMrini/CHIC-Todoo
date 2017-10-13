@@ -71,6 +71,9 @@ public class SettingsActivity extends IntentActivity implements DeviceListAdapte
 
     private static final String TAG = "SettingsActivity";
 
+    // Tag for logs for sending bytes to the watch
+    private static final String WATCH_TAG = "WATCH LOG";
+
     UserDatabaseHelper userDb;
     TaskDatabaseHelper taskDb;
 
@@ -78,7 +81,14 @@ public class SettingsActivity extends IntentActivity implements DeviceListAdapte
     Button syncToWatch;
     Button discoverDevices;
 
+    // Number of bytes to send
     int numberOfBytes = 1;
+
+    // Delay to send next bytes
+    int nextDelay = 0;
+
+    // Delay to retry to send same byte
+    int retryDelay = 10;
 
     Handler mHandler = new Handler();
 
@@ -106,19 +116,19 @@ public class SettingsActivity extends IntentActivity implements DeviceListAdapte
         public void run() {
             if (sendIndex >= msg.length) {
                 // Finished sending
-                Log.d(TAG, "Sending accomplished.");
+                Log.d(WATCH_TAG, "Sending accomplished.");
                 isSending = false;
                 sendIndex = 0;
             } else if (!(chosenCharacteristic.setValue(combine(msg, sendIndex, numberOfBytes)))) {
                 Log.e(TAG, "Could not set the value locally for " + sendIndex);
-                send(10);
+                send(retryDelay);
             } else {
                 if (!mBluetoothLeService.write(chosenCharacteristic)) {
                     Log.e(TAG, "Could set the value locally but not on BLE for " + sendIndex);
-                    send(10);
+                    send(retryDelay);
                 } else {
                     Toast.makeText(SettingsActivity.this, "Sync Completed!", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "Sent the following byte: " + chosenCharacteristic.getStringValue(0));
+                    Log.d(WATCH_TAG, "Sent the following byte: " + chosenCharacteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0));
                 }
             }
         }
@@ -537,7 +547,7 @@ public class SettingsActivity extends IntentActivity implements DeviceListAdapte
                     Log.e(TAG, "Could not find the Right Service");
                 }
             } else if (BluetoothLeService.CHARACTERISTIC_WRITTEN.equals(action)) {
-                sendNext(0);
+                sendNext(nextDelay);
             }
         }
     };
