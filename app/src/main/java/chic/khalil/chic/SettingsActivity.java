@@ -82,7 +82,7 @@ public class SettingsActivity extends IntentActivity implements DeviceListAdapte
     Button discoverDevices;
 
     // Number of bytes to send
-    int numberOfBytes = 1;
+    int numberOfBytes = 128;
 
     // Delay to send next bytes
     int nextDelay = 0;
@@ -128,7 +128,7 @@ public class SettingsActivity extends IntentActivity implements DeviceListAdapte
                     send(retryDelay);
                 } else {
                     Toast.makeText(SettingsActivity.this, "Sync Completed!", Toast.LENGTH_SHORT).show();
-                    Log.d(WATCH_TAG, "Sent the following byte: " + chosenCharacteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0));
+                    Log.d(WATCH_TAG, "Sent the following byte: " + chosenCharacteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0) + " out of " + msg.length);
                 }
             }
         }
@@ -233,24 +233,30 @@ public class SettingsActivity extends IntentActivity implements DeviceListAdapte
             @Override
             public void onClick(View view) {
                 //startConnection();
-                /*
+
                 // Parameters
                 byte[] parameters = {(byte) ((numericCountdown.isChecked() ? 4 : 0) + (visualCountdown.isChecked() ? 2 : 0) + (iconSwitch.isChecked() ? 1 : 0))};
 
                 // Current time
                 Date now = new Date();
-                byte[] currentTime = {(byte) now.getHours(), (byte) now.getMinutes(), (byte) now.getSeconds()};
+                Calendar calendar = Calendar.getInstance();
+                byte[] currentTime = {(byte) now.getHours(), (byte) now.getMinutes(), (byte) now.getSeconds(), (byte) ((calendar.get(Calendar.DAY_OF_WEEK) - 2 + 7) % 7)};
 
                 // Day Plans
                 String[] days = getResources().getStringArray(R.array.days);
                 ArrayList<Byte> dayPlans = new ArrayList<Byte>();
+                int activityCount = 0;
                 for (int i = 0; i < days.length; i++){
-                    dayPlans.add((byte) i);
                     Cursor cursor = taskDb.query(email, child, getResources().getString(R.string.init_day)+days[i]);
-                    int count = cursor.getCount();
-                    dayPlans.add((byte) count);
-                    for (int j = 0; j < count; j++){
+                    activityCount += cursor.getCount();
+                }
+                dayPlans.add((byte) activityCount);
+
+                for (int i = 0; i < days.length; i++){
+                    Cursor cursor = taskDb.query(email, child, getResources().getString(R.string.init_day)+days[i]);
+                    for (int j = 0; j < cursor.getCount(); j++){
                         cursor.moveToNext();
+                        dayPlans.add((byte) i);
 
                         String startTime = cursor.getString(cursor.getColumnIndex(taskDb.COL_6));
                         dayPlans.add((byte) Integer.parseInt(startTime.substring(0,2)));
@@ -259,6 +265,13 @@ public class SettingsActivity extends IntentActivity implements DeviceListAdapte
                         String endTime = cursor.getString(cursor.getColumnIndex(taskDb.COL_7));
                         dayPlans.add((byte) Integer.parseInt(endTime.substring(0,2)));
                         dayPlans.add((byte) Integer.parseInt(endTime.substring(3,5)));
+                    }
+                }
+
+                for (int i = 0; i < days.length; i++){
+                    Cursor cursor = taskDb.query(email, child, getResources().getString(R.string.init_day)+days[i]);
+                    for (int j = 0; j < cursor.getCount(); j++){
+                        cursor.moveToNext();
 
                         if (iconSwitch.isChecked()){
                             // Text case
@@ -272,7 +285,10 @@ public class SettingsActivity extends IntentActivity implements DeviceListAdapte
                             String filePath = cursor.getString(cursor.getColumnIndex(taskDb.COL_8));
                             Bitmap image = BitmapFactory.decodeFile(filePath);
                             if (image != null){
-                                Bitmap selectedImage = Bitmap.createScaledBitmap(image, IMAGE_SIZE, IMAGE_SIZE, false);
+                                if (visualCountdown.isChecked()){
+                                    numberOfBytes = 90;
+                                }
+                                Bitmap selectedImage = Bitmap.createScaledBitmap(image, numberOfBytes, numberOfBytes, false);
                                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                                 selectedImage.compress(Bitmap.CompressFormat.PNG, 100, stream);
                                 byte[] imageBytes = stream.toByteArray();
@@ -294,26 +310,7 @@ public class SettingsActivity extends IntentActivity implements DeviceListAdapte
                 }
                 
                 byte[] bytes = combine(parameters, currentTime, dayPlansArray);
-                */
-                /*String[] days = getResources().getStringArray(R.array.days);
-                ArrayList<Byte> dayPlans = new ArrayList<Byte>();
-                for (int i = 0; i < days.length; i++) {
-                    dayPlans.add((byte) i);
-                    Cursor cursor = taskDb.query(email, child, getResources().getString(R.string.init_day) + days[i]);
-                    int count = cursor.getCount();
-                    dayPlans.add((byte) count);
-                    for (int j = 0; j < count; j++) {
-                        cursor.moveToNext();
-                        String filePath = cursor.getString(cursor.getColumnIndex(taskDb.COL_8));
-                        Bitmap image = BitmapFactory.decodeFile(filePath);
-                        if (image != null) {
-                            Bitmap selectedImage = Bitmap.createScaledBitmap(image, IMAGE_SIZE, IMAGE_SIZE, false);
-                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                            selectedImage.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                            byte[] imageBytes = stream.toByteArray();
-                        }
-                    }
-                }*/
+                /*
                 Cursor cursor = taskDb.query(email, child, getResources().getString(R.string.init_day) + "MONDAY");
                 cursor.moveToFirst();
                 String filePath = cursor.getString(cursor.getColumnIndex(taskDb.COL_8));
@@ -321,7 +318,8 @@ public class SettingsActivity extends IntentActivity implements DeviceListAdapte
                 int bytes = image.getByteCount();
                 ByteBuffer buffer = ByteBuffer.allocate(bytes); //Create a new buffer
                 image.copyPixelsToBuffer(buffer);
-                msg = buffer.array();
+                */
+                msg = bytes;
 
                 isSending = true;
                 send(0);

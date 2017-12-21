@@ -162,7 +162,7 @@ public class AddTaskActivity extends AppCompatActivity {
         if (start && end && name.length() > 0){
             boolean inserted;
             if (filePath.length() > 0){
-                Bitmap selectedImage = getRoundedCornerBitmap(Bitmap.createScaledBitmap(BitmapFactory.decodeFile(filePath), 80, 80, false),7);
+                Bitmap selectedImage = getRoundedCornerBitmap(Bitmap.createScaledBitmap(BitmapFactory.decodeFile(filePath), 128, 128, false),7);
                 String newFilePath = saveToInternalStorage(selectedImage, name);
                 inserted = myDb.insertData(email, child, plan, name, startTime, endTime, newFilePath);
             } else {
