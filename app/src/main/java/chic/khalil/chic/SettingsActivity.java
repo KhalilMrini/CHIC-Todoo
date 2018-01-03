@@ -128,7 +128,7 @@ public class SettingsActivity extends IntentActivity implements DeviceListAdapte
                     send(retryDelay);
                 } else {
                     Toast.makeText(SettingsActivity.this, "Sync Completed!", Toast.LENGTH_SHORT).show();
-                    Log.d(WATCH_TAG, "Sent the following byte: " + chosenCharacteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0) + " out of " + msg.length);
+                    Log.d(WATCH_TAG, "Sent the following byte: " + chosenCharacteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0) + ", which is " + sendIndex + " out of " + msg.length);
                 }
             }
         }
@@ -283,17 +283,11 @@ public class SettingsActivity extends IntentActivity implements DeviceListAdapte
                         } else {
                             // Image case
                             String filePath = cursor.getString(cursor.getColumnIndex(taskDb.COL_8));
-                            Bitmap image = BitmapFactory.decodeFile(filePath);
+                            Bitmap image = BitmapFactory.decodeFile(filePath).copy(Bitmap.Config.RGB_565, false);
                             if (image != null){
-                                if (visualCountdown.isChecked()){
-                                    numberOfBytes = 90;
-                                }
-                                Bitmap selectedImage = Bitmap.createScaledBitmap(image, numberOfBytes, numberOfBytes, false);
-                                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                                selectedImage.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                                byte[] imageBytes = stream.toByteArray();
-                                dayPlans.add((byte) 1);
-                                for (byte b: imageBytes){
+                                ByteBuffer buffer = ByteBuffer.allocate(image.getByteCount()); //Create a new buffer
+                                image.copyPixelsToBuffer(buffer);
+                                for (byte b: buffer.array()){
                                     dayPlans.add(b);
                                 }
                             } else {
@@ -513,6 +507,9 @@ public class SettingsActivity extends IntentActivity implements DeviceListAdapte
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 // Disconnected
                 Log.d(TAG, "Disonnected");
+                if (isSending && sendIndex > 0){
+                    sendIndex -= numberOfBytes;
+                }
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 // Show all the supported services and characteristics on the user interface.
                 Log.d(TAG, "Found Services");
